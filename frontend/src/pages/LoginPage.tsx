@@ -1,9 +1,8 @@
-// ============================================
-// src/pages/LoginPage.tsx
-// ============================================
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { authAPI, setAuthToken, setUser } from '../services/api.service';
+import { loginAPI, formValidation } from '../services/login';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap-icons/font/bootstrap-icons.css';
 import '../styles/App.css';
 
 const LoginPage: React.FC = () => {
@@ -13,122 +12,178 @@ const LoginPage: React.FC = () => {
     password: '',
   });
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [errors, setErrors] = useState<{ email?: string; password?: string; general?: string }>({});
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value,
+      [name]: value,
     });
-    setError('');
-  };
-
-  const validateForm = (): boolean => {
-    if (!formData.email || !formData.password) {
-      setError('Please fill in all fields');
-      return false;
+    
+    // Clear specific field error when user starts typing
+    if (errors[name as keyof typeof errors]) {
+      setErrors(prev => ({
+        ...prev,
+        [name]: undefined
+      }));
     }
-
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(formData.email)) {
-      setError('Please enter a valid email address');
-      return false;
-    }
-
-    return true;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!validateForm()) return;
+    // Validate form
+    const validation = formValidation.validateLoginForm(formData.email, formData.password);
+    
+    if (!validation.isValid) {
+      setErrors(validation.errors);
+      return;
+    }
 
     setLoading(true);
-    setError('');
+    setErrors({});
 
     try {
-      const response = await authAPI.login(formData);
+      const response = await loginAPI.login(formData);
       
-      // Save token and user data
-      setAuthToken(response.data.token);
-      setUser(response.data.user);
+      // Save authentication data
+      loginAPI.saveAuthData(response.data.token, response.data.user);
 
-      // Navigate to dashboard or home
-      navigate('/dashboard');
+      // Navigate based on isArtist status
+      if (response.data.user.isArtist) {
+        navigate('/dashboard');
+      } else {
+        navigate('/profile');
+      }
     } catch (err: any) {
-      setError(
-        err.response?.data?.error || 
-        'Invalid credentials. Please check your email and password.'
-      );
+      setErrors({
+        general: err.message || 'Invalid credentials. Please check your email and password.'
+      });
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="auth-page">
-      <div className="auth-container fade-in">
-        <div className="auth-header">
-          <div className="auth-logo">🎨</div>
-          <h1>Welcome Back</h1>
-          <p>Log in to your Arthub account</p>
-        </div>
+    <div className="min-vh-100 d-flex align-items-center" style={{ backgroundColor: '#f8f9fa' }}>
+      <div className="container">
+        <div className="row justify-content-center">
+          <div className="col-12 col-md-6 col-lg-5">
+            <div className="bg-white rounded-4 shadow-sm p-4 p-md-5">
+              <div className="text-center mb-4">
+                <h1 className="h2 fw-bold mb-2">Welcome Back</h1>
+                <p className="text-muted">Sign in to your Arthub account</p>
+              </div>
 
-        {error && (
-          <div className="error-message">
-            <span>⚠️</span>
-            {error}
+              {errors.general && (
+                <div className="alert alert-danger alert-dismissible fade show">
+                  <i className="bi bi-exclamation-triangle-fill me-2"></i>
+                  {errors.general}
+                  <button type="button" className="btn-close" onClick={() => setErrors({})}></button>
+                </div>
+              )}
+
+              <form onSubmit={handleSubmit}>
+                <div className="mb-3">
+                  <label htmlFor="email" className="form-label fw-semibold">Email</label>
+                  <input
+                    type="email"
+                    className="form-control"
+                    id="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    disabled={loading}
+                    autoComplete="email"
+                    placeholder="name@example.com"
+                  />
+                  {errors.email && <div className="invalid-feedback d-block">{errors.email}</div>}
+                </div>
+
+                <div className="mb-3">
+                  <label htmlFor="password" className="form-label fw-semibold">Password</label>
+                  <div className="position-relative">
+                    <input
+                      type={showPassword ? 'text' : 'password'}
+                      className="form-control"
+                      id="password"
+                      name="password"
+                      value={formData.password}
+                      onChange={handleChange}
+                      disabled={loading}
+                      autoComplete="current-password"
+                      placeholder="Enter your password"
+                    />
+                    <button
+                      type="button"
+                      className="btn btn-link position-absolute end-0 top-50 translate-middle-y text-muted"
+                      style={{ transform: 'translateY(-50%)', marginRight: '10px' }}
+                      onClick={() => setShowPassword(!showPassword)}
+                      disabled={loading}
+                    >
+                      <i className={`bi ${showPassword ? 'bi-eye-slash' : 'bi-eye'}`}></i>
+                    </button>
+                  </div>
+                  {errors.password && <div className="invalid-feedback d-block">{errors.password}</div>}
+                </div>
+
+                <button 
+                  type="submit" 
+                  className="btn btn-primary w-100"
+                  disabled={loading}
+                >
+                  {loading ? (
+                    <>
+                      <span className="spinner-border spinner-border-sm me-2"></span>
+                      Logging in...
+                    </>
+                  ) : (
+                    <>
+                      <i className="bi bi-box-arrow-in-right me-2"></i>
+                      Sign In
+                    </>
+                  )}
+                </button>
+              </form>
+
+              <div className="text-center my-4 position-relative">
+                <hr />
+                <span className="position-absolute top-50 start-50 translate-middle bg-white px-3 text-muted small">or</span>
+              </div>
+
+              <div className="row g-2">
+                <div className="col-6">
+                  <button 
+                    type="button" 
+                    className="btn btn-outline-dark w-100"
+                    onClick={() => alert('Google login - Coming soon!')}
+                  >
+                    <i className="bi bi-google me-2"></i>
+                    Google
+                  </button>
+                </div>
+                <div className="col-6">
+                  <button 
+                    type="button" 
+                    className="btn btn-outline-primary w-100"
+                    onClick={() => alert('Facebook login - Coming soon!')}
+                  >
+                    <i className="bi bi-facebook me-2"></i>
+                    Facebook
+                  </button>
+                </div>
+              </div>
+
+              <div className="text-center mt-4">
+                <span className="text-muted">Don't have an account? </span>
+                <Link to="/signup" className="text-primary fw-semibold text-decoration-none">
+                  Sign Up
+                </Link>
+              </div>
+            </div>
           </div>
-        )}
-
-        <form className="auth-form" onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label htmlFor="email">Email Address</label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              placeholder="john@example.com"
-              value={formData.email}
-              onChange={handleChange}
-              disabled={loading}
-              autoComplete="email"
-            />
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="password">Password</label>
-            <input
-              type="password"
-              id="password"
-              name="password"
-              placeholder="Enter your password"
-              value={formData.password}
-              onChange={handleChange}
-              disabled={loading}
-              autoComplete="current-password"
-            />
-          </div>
-
-          <button 
-            type="submit" 
-            className="btn btn-primary btn-full"
-            disabled={loading}
-          >
-            {loading ? (
-              <>
-                <span className="spinner"></span>
-                Logging in...
-              </>
-            ) : (
-              'Log In'
-            )}
-          </button>
-        </form>
-
-        <div className="auth-footer">
-          Don't have an account?{' '}
-          <Link to="/signup">Sign up for free</Link>
         </div>
       </div>
     </div>

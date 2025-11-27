@@ -3,7 +3,7 @@
 import axios from 'axios';
 import type { AxiosInstance, InternalAxiosRequestConfig, AxiosResponse, AxiosError } from 'axios';
 
-const BASE_URL = 'http://localhost:3000/api/v1';
+const BASE_URL = 'http://localhost:3001/api/v1';
 
 // Create axios instance
 const apiClient: AxiosInstance = axios.create({
@@ -149,6 +149,16 @@ export const authAPI = {
     const response = await apiClient.put('/auth/profile', data);
     return response.data;
   },
+
+  requestPasswordReset: async (email: string): Promise<ApiResponse<any>> => {
+    const response = await apiClient.post('/auth/request-password-reset', { email });
+    return response.data;
+  },
+
+  resetPassword: async (email: string, otp: string, newPassword: string): Promise<ApiResponse<any>> => {
+    const response = await apiClient.post('/auth/reset-password', { email, otp, newPassword });
+    return response.data;
+  },
 };
 
 // Artist API
@@ -164,8 +174,25 @@ export const artistAPI = {
     return response.data;
   },
 
+  getProfileById: async (userId: string): Promise<ApiResponse<any>> => {
+    const response = await apiClient.get(`/artists/profile/${userId}`);
+    return response.data;
+  },
+
   updateProfile: async (data: ArtistProfileData): Promise<ApiResponse<any>> => {
     const response = await apiClient.put('/artists/profile', data);
+    return response.data;
+  },
+
+  uploadProfilePicture: async (file: File): Promise<ApiResponse<{ url: string }>> => {
+    const formData = new FormData();
+    formData.append('profilePicture', file);
+    
+    const response = await apiClient.post('/artists/upload-profile-picture', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
     return response.data;
   },
 
@@ -229,6 +256,27 @@ export const artworkAPI = {
     const response = await apiClient.post(`/artworks/${artworkId}/like`);
     return response.data;
   },
+
+  uploadImage: async (file: File): Promise<ApiResponse<{ url: string }>> => {
+    const formData = new FormData();
+    formData.append('images', file);
+    
+    const response = await apiClient.post('/artworks/upload-image', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.data;
+  },
+
+  uploadMultipleImages: async (formData: FormData): Promise<ApiResponse<any>> => {
+    const response = await apiClient.post('/artworks/upload-image', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.data;
+  },
 };
 
 // Order API
@@ -280,12 +328,23 @@ export const reviewAPI = {
     const response = await apiClient.delete(`/reviews/${reviewId}`);
     return response.data;
   },
+
+  checkReviewExists: async (orderId: string): Promise<ApiResponse<any>> => {
+    const response = await apiClient.get(`/reviews/check/${orderId}`);
+    return response.data;
+  },
+
+  getArtistReviews: async (artistId: string, limit?: number): Promise<ApiResponse<any>> => {
+    const url = limit ? `/reviews/artist/${artistId}?limit=${limit}` : `/reviews/artist/${artistId}`;
+    const response = await apiClient.get(url);
+    return response.data;
+  },
 };
 
 // Community API
 export const communityAPI = {
   sendConnectionRequest: async (data: ConnectionData): Promise<ApiResponse<any>> => {
-    const response = await apiClient.post('/community', data);
+    const response = await apiClient.post('/community/connections', data);
     return response.data;
   },
 
@@ -300,12 +359,12 @@ export const communityAPI = {
   },
 
   updateConnectionStatus: async (connectionId: string, status: string): Promise<ApiResponse<any>> => {
-    const response = await apiClient.put(`/community/${connectionId}`, { status });
+    const response = await apiClient.put(`/community/connections/${connectionId}`, { status });
     return response.data;
   },
 
   deleteConnection: async (connectionId: string): Promise<ApiResponse<any>> => {
-    const response = await apiClient.delete(`/community/${connectionId}`);
+    const response = await apiClient.delete(`/community/connections/${connectionId}`);
     return response.data;
   },
 };
@@ -337,4 +396,5 @@ export const isAuthenticated = (): boolean => {
   return !!getAuthToken();
 };
 
+export { apiClient };
 export default apiClient;

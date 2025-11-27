@@ -20,9 +20,15 @@ exports.createArtwork = async (req, res, next) => {
 exports.getArtwork = async (req, res, next) => {
   try {
     const artwork = await artworkService.getArtworkById(req.params.artworkId);
+    
+    // Transform artwork to match frontend expectations
+    const artworkObj = artwork.toObject();
+    artworkObj.artist = artworkObj.artistId;
+    delete artworkObj.artistId;
+    
     res.status(200).json({
       success: true,
-      data: artwork
+      data: artworkObj
     });
   } catch (error) {
     next(error);
@@ -77,6 +83,98 @@ exports.toggleLike = async (req, res, next) => {
     res.status(200).json({
       success: true,
       data: result
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.uploadImage = async (req, res, next) => {
+  try {
+    // Handle both single file and multiple files
+    const files = req.files || (req.file ? [req.file] : []);
+    
+    if (files.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'No image file provided'
+      });
+    }
+
+    // Return the URLs for all uploaded images
+    const uploadedImages = files.map((file, index) => ({
+      url: `/assets/images/art/${file.filename}`,
+      filename: file.filename,
+      originalname: file.originalname,
+      size: file.size,
+      isPrimary: index === 0 // First image is primary
+    }));
+    
+    res.status(200).json({
+      success: true,
+      message: files.length === 1 ? 'Image uploaded successfully' : 'Images uploaded successfully',
+      data: files.length === 1 ? uploadedImages[0] : uploadedImages // Return single object for single file, array for multiple
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.getTrendingArtworks = async (req, res, next) => {
+  try {
+    const { limit = 8 } = req.query;
+    const artworks = await artworkService.getTrendingArtworks(parseInt(limit));
+    
+    // Get userId from authenticated user if available
+    const userId = req.user?.id || null;
+    
+    // Transform artworks to match frontend expectations
+    const transformedArtworks = artworks.map(artwork => {
+      const artworkObj = artwork.toObject();
+      artworkObj.artist = artworkObj.artistId;
+      delete artworkObj.artistId;
+      // Add computed fields
+      artworkObj.likesCount = artworkObj.likes ? artworkObj.likes.length : 0;
+      artworkObj.isLiked = userId && artworkObj.likes && artworkObj.likes.some(likeId => likeId.toString() === userId.toString());
+      return artworkObj;
+    });
+    
+    res.status(200).json({
+      success: true,
+      data: transformedArtworks
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.getArtworksByArtist = async (req, res, next) => {
+  try {
+    const artworks = await artworkService.getArtistInventory(req.params.artistId);
+    
+    // Get userId from authenticated user if available
+    const userId = req.user?.id || null;
+    
+    // Transform artworks to match frontend expectations
+    const transformedArtworks = artworks.map(artwork => {
+      const artworkObj = artwork.toObject();
+      artworkObj.artist = artworkObj.artistId;
+      delete artworkObj.artistId;
+      // Add computed fields
+      artworkObj.likesCount = artworkObj.likes ? artworkObj.likes.length : 0;
+      artworkObj.isLiked = userId && artworkObj.likes && artworkObj.likes.some(likeId => likeId.toString() === userId.toString());
+      return artworkObj;
+    });
+    
+    res.status(200).json({
+      success: true,
+      data: transformedArtworks,
+      pagination: {
+        page: 1,
+        limit: transformedArtworks.length,
+        total: transformedArtworks.length,
+        pages: 1
+      }
     });
   } catch (error) {
     next(error);
