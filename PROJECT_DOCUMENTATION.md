@@ -1,4 +1,4 @@
-# Arthub - Online Art Marketplace
+# Online Art Marketplace
 ## Complete Project Documentation
 
 ---
