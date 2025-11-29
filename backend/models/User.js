@@ -28,10 +28,6 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: false
   },
-  isEmailVerified: {
-    type: Boolean,
-    default: false
-  },
   profilePicture: {
     type: String,
     default: null
@@ -41,12 +37,6 @@ const userSchema = new mongoose.Schema({
     type: String,
     trim: true,
     maxlength: [1000, 'Bio cannot exceed 1000 characters'],
-    default: null
-  },
-  portfolio: {
-    type: String,
-    trim: true,
-    maxlength: [2000, 'Portfolio description cannot exceed 2000 characters'],
     default: null
   },
   socialMediaLinks: {

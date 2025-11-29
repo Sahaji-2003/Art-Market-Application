@@ -7,10 +7,8 @@ const User = require('../models/User');
 const Artwork = require('../models/Artwork');
 const Order = require('../models/Order');
 const Review = require('../models/Review');
-const Community = require('../models/Community');
 const Post = require('../models/Post');
 const Comment = require('../models/Comment');
-const Notification = require('../models/Notification');
 
 const connectDB = async () => {
   try {
@@ -33,10 +31,8 @@ const seedData = async () => {
       Artwork.deleteMany(),
       Order.deleteMany(),
       Review.deleteMany(),
-      Community.deleteMany(),
       Post.deleteMany(),
-      Comment.deleteMany(),
-      Notification.deleteMany()
+      Comment.deleteMany()
     ]);
     console.log('🧹 Cleared existing data');
 
@@ -63,7 +59,6 @@ const seedData = async () => {
     await User.findByIdAndUpdate(users[0]._id, {
       isArtist: true,
       bio: 'Contemporary painter inspired by urban life.',
-      portfolio: 'https://behance.net/aliceart',
       socialMediaLinks: { instagram: 'https://instagram.com/aliceart' },
       isVerified: true,
       rating: 4.8,
@@ -74,7 +69,6 @@ const seedData = async () => {
     await User.findByIdAndUpdate(users[1]._id, {
       isArtist: true,
       bio: 'Sculptor focusing on modern minimalism.',
-      portfolio: 'https://bobsculpt.com',
       socialMediaLinks: { instagram: 'https://instagram.com/bobsculpt' },
       isVerified: true,
       rating: 4.6,
@@ -85,7 +79,6 @@ const seedData = async () => {
     await User.findByIdAndUpdate(users[2]._id, {
       isArtist: true,
       bio: 'Digital illustrator and concept artist.',
-      portfolio: 'https://dribbble.com/clarawilson',
       socialMediaLinks: { instagram: 'https://instagram.com/clarawilson' },
       isVerified: false,
       rating: 4.5,
@@ -96,7 +89,6 @@ const seedData = async () => {
     await User.findByIdAndUpdate(users[3]._id, {
       isArtist: true,
       bio: 'Photographer capturing human emotions.',
-      portfolio: 'https://photographybydavid.com',
       socialMediaLinks: { instagram: 'https://instagram.com/davidphoto' },
       isVerified: true,
       rating: 4.9,
@@ -107,7 +99,6 @@ const seedData = async () => {
     await User.findByIdAndUpdate(users[4]._id, {
       isArtist: true,
       bio: 'Mixed-media artist exploring textures and forms.',
-      portfolio: 'https://ellamediaart.com',
       socialMediaLinks: { instagram: 'https://instagram.com/ellamedia' },
       isVerified: false,
       rating: 4.3,
@@ -118,7 +109,6 @@ const seedData = async () => {
     await User.findByIdAndUpdate(specialUser._id, {
       isArtist: true,
       bio: 'All-round creator: painting, digital art & sculpture.',
-      portfolio: 'https://specialuserart.com',
       socialMediaLinks: { instagram: 'https://instagram.com/specialuserart' },
       isVerified: true,
       rating: 4.7,
@@ -398,89 +388,6 @@ const seedData = async () => {
       }
     ]);
     console.log('⭐ Reviews inserted');
-
-    // Community Connections
-    const communities = await Community.insertMany([
-      {
-        senderId: users[0]._id,
-        receiverId: users[1]._id,
-        status: 'accepted',
-        connectionType: 'collaboration',
-        message: 'Let’s collaborate on an exhibition!'
-      },
-      {
-        senderId: users[2]._id,
-        receiverId: users[0]._id,
-        status: 'pending',
-        connectionType: 'mentorship',
-        message: 'Would love to learn from you!'
-      },
-      {
-        senderId: users[3]._id,
-        receiverId: users[4]._id,
-        status: 'accepted',
-        connectionType: 'networking',
-        message: 'Hello Ella, nice to connect.'
-      },
-      {
-        senderId: users[5]._id,
-        receiverId: users[6]._id,
-        status: 'rejected',
-        connectionType: 'general',
-        message: 'Thanks but I prefer not right now.'
-      },
-      // Connections involving special user
-      {
-        senderId: specialUser._id,
-        receiverId: users[0]._id,
-        status: 'accepted',
-        connectionType: 'collaboration',
-        message: 'Let’s work together on a project!'
-      },
-      {
-        senderId: users[1]._id,
-        receiverId: specialUser._id,
-        status: 'pending',
-        connectionType: 'mentorship',
-        message: 'Would love to learn from you.'
-      },
-      {
-        senderId: users[3]._id,
-        receiverId: users[0]._id,
-        status: 'accepted',
-        connectionType: 'collaboration',
-        message: 'Interested in collaborating on a photography project!'
-      },
-      {
-        senderId: users[4]._id,
-        receiverId: users[2]._id,
-        status: 'pending',
-        connectionType: 'networking',
-        message: 'Love your digital art style! Would love to connect.'
-      },
-      {
-        senderId: specialUser._id,
-        receiverId: users[3]._id,
-        status: 'accepted',
-        connectionType: 'general',
-        message: 'Hi David! Looking forward to working with you.'
-      },
-      {
-        senderId: users[6]._id,
-        receiverId: users[0]._id,
-        status: 'pending',
-        connectionType: 'mentorship',
-        message: 'Could you mentor me on portrait painting techniques?'
-      },
-      {
-        senderId: users[7]._id,
-        receiverId: specialUser._id,
-        status: 'accepted',
-        connectionType: 'collaboration',
-        message: 'Great to connect! Let\'s explore opportunities.'
-      }
-    ]);
-    console.log('🤝 Community connections inserted');
 
     // Community Posts
     const posts = await Post.insertMany([

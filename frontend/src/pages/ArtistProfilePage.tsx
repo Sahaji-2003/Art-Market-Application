@@ -13,7 +13,6 @@ const ArtistProfilePage: React.FC = () => {
     artistName: currentUser?.name || '',
     email: currentUser?.email || '',
     bio: '',
-    portfolio: '',
     instagram: '',
     twitter: '',
     website: '',
@@ -42,7 +41,6 @@ const ArtistProfilePage: React.FC = () => {
           artistName: currentUser?.name || '',
           email: currentUser?.email || '',
           bio: response.data.bio || '',
-          portfolio: response.data.portfolio || '',
           instagram: response.data.socialMediaLinks?.instagram || '',
           twitter: response.data.socialMediaLinks?.twitter || '',
           website: response.data.socialMediaLinks?.website || '',
@@ -119,7 +117,6 @@ const ArtistProfilePage: React.FC = () => {
     try {
       const profileData = {
         bio: formData.bio,
-        portfolio: formData.portfolio,
         socialMediaLinks: {
           instagram: formData.instagram,
           twitter: formData.twitter,

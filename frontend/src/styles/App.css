@@ -7632,3 +7632,60 @@
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+/* ============================================
+   AUTH PAGES ENHANCED STYLES
+   ============================================ */
+
+.auth-visual-section {
+  animation: fadeInRight 0.6s ease-out;
+}
+
+@keyframes fadeInRight {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.auth-feature-item {
+  transition: transform 0.3s ease, background-color 0.3s ease;
+  padding: 0.5rem;
+  border-radius: 8px;
+}
+
+.auth-feature-item:hover {
+  transform: translateX(5px);
+  background-color: rgba(74, 144, 226, 0.05);
+}
+
+@media (max-width: 991px) {
+  .auth-visual-section {
+    margin-top: 2rem;
+  }
+}
+
+/* Form input enhancements */
+.form-control:focus {
+  border-color: #4A90E2;
+  box-shadow: 0 0 0 0.2rem rgba(74, 144, 226, 0.25);
+}
+
+/* Password visibility toggle button */
+.btn-link.text-muted:hover {
+  color: #4A90E2 !important;
+}
+
+/* Confirm password field styling */
+#confirmPassword.is-invalid {
+  border-color: #dc3545;
+}
+
+#confirmPassword.is-invalid:focus {
+  border-color: #dc3545;
+  box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+}

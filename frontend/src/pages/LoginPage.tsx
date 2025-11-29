@@ -68,9 +68,10 @@ const LoginPage: React.FC = () => {
 
   return (
     <div className="min-vh-100 d-flex align-items-center" style={{ backgroundColor: '#f8f9fa' }}>
-      <div className="container">
-        <div className="row justify-content-center">
-          <div className="col-12 col-md-6 col-lg-5">
+      <div className="container-fluid px-4">
+        <div className="row justify-content-center align-items-center">
+          {/* Left Side - Form */}
+          <div className="col-12 col-lg-5 mb-4 mb-lg-0">
             <div className="bg-white rounded-4 shadow-sm p-4 p-md-5">
               <div className="text-center mb-4">
                 <h1 className="h2 fw-bold mb-2">Welcome Back</h1>
@@ -181,6 +182,59 @@ const LoginPage: React.FC = () => {
                 <Link to="/signup" className="text-primary fw-semibold text-decoration-none">
                   Sign Up
                 </Link>
+              </div>
+            </div>
+          </div>
+
+          {/* Right Side - Visual Element */}
+          <div className="col-12 col-lg-6 col-xl-5 d-none d-lg-flex align-items-center justify-content-center">
+            <div className="text-center p-4" style={{ maxWidth: '500px' }}>
+              <div className="mb-4">
+                <div className="d-flex justify-content-center align-items-center mb-3">
+                  <div className="bg-primary rounded-circle d-flex align-items-center justify-content-center" style={{ width: '80px', height: '80px' }}>
+                    <i className="bi bi-palette-fill text-white" style={{ fontSize: '2.5rem' }}></i>
+                  </div>
+                </div>
+                <h2 className="fw-bold mb-3" style={{ color: '#4A90E2' }}>Welcome Back!</h2>
+                <p className="lead text-muted mb-4">
+                  Continue your artistic journey and discover amazing artworks
+                </p>
+              </div>
+              
+              <div className="row g-3 text-start">
+                <div className="col-12">
+                  <div className="auth-feature-item d-flex align-items-start gap-3">
+                    <div className="bg-primary bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center" style={{ width: '40px', height: '40px', flexShrink: 0 }}>
+                      <i className="bi bi-search text-primary"></i>
+                    </div>
+                    <div>
+                      <h6 className="fw-semibold mb-1">Discover Art</h6>
+                      <p className="text-muted small mb-0">Browse thousands of unique artworks from talented artists</p>
+                    </div>
+                  </div>
+                </div>
+                <div className="col-12">
+                  <div className="auth-feature-item d-flex align-items-start gap-3">
+                    <div className="bg-primary bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center" style={{ width: '40px', height: '40px', flexShrink: 0 }}>
+                      <i className="bi bi-heart-fill text-primary"></i>
+                    </div>
+                    <div>
+                      <h6 className="fw-semibold mb-1">Build Your Collection</h6>
+                      <p className="text-muted small mb-0">Like, save, and purchase artworks you love</p>
+                    </div>
+                  </div>
+                </div>
+                <div className="col-12">
+                  <div className="auth-feature-item d-flex align-items-start gap-3">
+                    <div className="bg-primary bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center" style={{ width: '40px', height: '40px', flexShrink: 0 }}>
+                      <i className="bi bi-chat-dots-fill text-primary"></i>
+                    </div>
+                    <div>
+                      <h6 className="fw-semibold mb-1">Join the Community</h6>
+                      <p className="text-muted small mb-0">Engage with artists and share your thoughts</p>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

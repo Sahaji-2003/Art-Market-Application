@@ -4,13 +4,12 @@
 // ============================================
 const express = require('express');
 const router = express.Router();
-const communityController = require('../controllers/communityController');
 const postController = require('../controllers/postController');
 const { protect } = require('../middleware/authMiddleware');
 
 // All routes are protected
 
-// Post/Discussion routes (must come before dynamic connection routes)
+// Post/Discussion routes
 // Create post
 router.post('/posts', protect, postController.createPost);
 
@@ -40,21 +39,5 @@ router.post('/comments/:commentId/like', protect, postController.toggleCommentLi
 
 // Delete comment
 router.delete('/comments/:commentId', protect, postController.deleteComment);
-
-// Connection routes (must come after specific routes)
-// Get connection requests
-router.get('/requests', protect, communityController.getConnectionRequests);
-
-// Get connections
-router.get('/connections', protect, communityController.getConnections);
-
-// Send connection request
-router.post('/connections', protect, communityController.sendConnectionRequest);
-
-// Update connection status
-router.put('/connections/:connectionId', protect, communityController.updateConnectionStatus);
-
-// Delete connection
-router.delete('/connections/:connectionId', protect, communityController.deleteConnection);
 
 module.exports = router;

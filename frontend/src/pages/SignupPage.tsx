@@ -11,10 +11,12 @@ const SignupPage: React.FC = () => {
     name: '',
     email: '',
     password: '',
+    confirmPassword: '',
   });
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [errors, setErrors] = useState<{ name?: string; email?: string; password?: string; captcha?: string; general?: string }>({});
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [errors, setErrors] = useState<{ name?: string; email?: string; password?: string; confirmPassword?: string; captcha?: string; general?: string }>({});
   
   // Simple CAPTCHA
   const [captchaAnswer, setCaptchaAnswer] = useState('');
@@ -52,6 +54,12 @@ const SignupPage: React.FC = () => {
       newErrors.password = 'Password is required';
     } else if (formData.password.length < 8) {
       newErrors.password = 'Password must be at least 8 characters long';
+    }
+    
+    if (!formData.confirmPassword) {
+      newErrors.confirmPassword = 'Please confirm your password';
+    } else if (formData.password !== formData.confirmPassword) {
+      newErrors.confirmPassword = 'Passwords do not match';
     }
     
     // Validate CAPTCHA
@@ -115,9 +123,10 @@ const SignupPage: React.FC = () => {
 
   return (
     <div className="min-vh-100 d-flex align-items-center" style={{ backgroundColor: '#f8f9fa' }}>
-      <div className="container">
-        <div className="row justify-content-center">
-          <div className="col-12 col-md-7 col-lg-6">
+      <div className="container-fluid px-4">
+        <div className="row justify-content-center align-items-center">
+          {/* Left Side - Form */}
+          <div className="col-12 col-lg-5 mb-4 mb-lg-0">
             <div className="bg-white rounded-4 shadow-sm p-4 p-md-5">
               <div className="text-center mb-4">
                 <h1 className="h2 fw-bold mb-2">Create Your Account</h1>
@@ -191,6 +200,33 @@ const SignupPage: React.FC = () => {
                       </div>
                       {errors.password && <div className="invalid-feedback d-block">{errors.password}</div>}
                       <div className="form-text">Must be at least 8 characters long</div>
+                    </div>
+
+                    <div className="mb-3">
+                      <label htmlFor="confirmPassword" className="form-label fw-semibold">Confirm Password</label>
+                      <div className="position-relative">
+                        <input
+                          type={showConfirmPassword ? 'text' : 'password'}
+                          className={`form-control ${errors.confirmPassword ? 'is-invalid' : ''}`}
+                          id="confirmPassword"
+                          name="confirmPassword"
+                          value={formData.confirmPassword}
+                          onChange={handleChange}
+                          disabled={loading}
+                          autoComplete="new-password"
+                          placeholder="Confirm your password"
+                        />
+                        <button
+                          type="button"
+                          className="btn btn-link position-absolute end-0 top-50 translate-middle-y text-muted"
+                          style={{ transform: 'translateY(-50%)', marginRight: '10px' }}
+                          onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                          disabled={loading}
+                        >
+                          <i className={`bi ${showConfirmPassword ? 'bi-eye-slash' : 'bi-eye'}`}></i>
+                        </button>
+                      </div>
+                      {errors.confirmPassword && <div className="invalid-feedback d-block">{errors.confirmPassword}</div>}
                     </div>
 
                     {/* CAPTCHA */}
@@ -282,6 +318,59 @@ const SignupPage: React.FC = () => {
                 <Link to="/login" className="text-primary fw-semibold text-decoration-none">
                   Log In
                 </Link>
+              </div>
+            </div>
+          </div>
+
+          {/* Right Side - Visual Element */}
+          <div className="col-12 col-lg-6 col-xl-5 d-none d-lg-flex align-items-center justify-content-center">
+            <div className="text-center p-4" style={{ maxWidth: '500px' }}>
+              <div className="mb-4">
+                <div className="d-flex justify-content-center align-items-center mb-3">
+                  <div className="bg-primary rounded-circle d-flex align-items-center justify-content-center" style={{ width: '80px', height: '80px' }}>
+                    <i className="bi bi-palette-fill text-white" style={{ fontSize: '2.5rem' }}></i>
+                  </div>
+                </div>
+                <h2 className="fw-bold mb-3" style={{ color: '#4A90E2' }}>Welcome to Arthub</h2>
+                <p className="lead text-muted mb-4">
+                  Join thousands of artists and art enthusiasts in our vibrant community
+                </p>
+              </div>
+              
+              <div className="row g-3 text-start">
+                <div className="col-12">
+                  <div className="auth-feature-item d-flex align-items-start gap-3">
+                    <div className="bg-primary bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center" style={{ width: '40px', height: '40px', flexShrink: 0 }}>
+                      <i className="bi bi-check-circle-fill text-primary"></i>
+                    </div>
+                    <div>
+                      <h6 className="fw-semibold mb-1">Showcase Your Art</h6>
+                      <p className="text-muted small mb-0">Upload and sell your creative works to a global audience</p>
+                    </div>
+                  </div>
+                </div>
+                <div className="col-12">
+                  <div className="auth-feature-item d-flex align-items-start gap-3">
+                    <div className="bg-primary bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center" style={{ width: '40px', height: '40px', flexShrink: 0 }}>
+                      <i className="bi bi-people-fill text-primary"></i>
+                    </div>
+                    <div>
+                      <h6 className="fw-semibold mb-1">Connect with Artists</h6>
+                      <p className="text-muted small mb-0">Join discussions, share tips, and grow your network</p>
+                    </div>
+                  </div>
+                </div>
+                <div className="col-12">
+                  <div className="auth-feature-item d-flex align-items-start gap-3">
+                    <div className="bg-primary bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center" style={{ width: '40px', height: '40px', flexShrink: 0 }}>
+                      <i className="bi bi-graph-up-arrow text-primary"></i>
+                    </div>
+                    <div>
+                      <h6 className="fw-semibold mb-1">Track Your Growth</h6>
+                      <p className="text-muted small mb-0">Monitor sales, reviews, and your artistic journey</p>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

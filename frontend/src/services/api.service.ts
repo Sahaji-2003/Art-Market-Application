@@ -341,33 +341,8 @@ export const reviewAPI = {
   },
 };
 
-// Community API
-export const communityAPI = {
-  sendConnectionRequest: async (data: ConnectionData): Promise<ApiResponse<any>> => {
-    const response = await apiClient.post('/community/connections', data);
-    return response.data;
-  },
-
-  getConnectionRequests: async (): Promise<ApiResponse<any[]>> => {
-    const response = await apiClient.get('/community/requests');
-    return response.data;
-  },
-
-  getConnections: async (): Promise<ApiResponse<any[]>> => {
-    const response = await apiClient.get('/community/connections');
-    return response.data;
-  },
-
-  updateConnectionStatus: async (connectionId: string, status: string): Promise<ApiResponse<any>> => {
-    const response = await apiClient.put(`/community/connections/${connectionId}`, { status });
-    return response.data;
-  },
-
-  deleteConnection: async (connectionId: string): Promise<ApiResponse<any>> => {
-    const response = await apiClient.delete(`/community/connections/${connectionId}`);
-    return response.data;
-  },
-};
+// Community API - Only post/discussion related APIs
+export const communityAPI = {};
 
 // Auth Helper Functions
 export const setAuthToken = (token: string) => {
